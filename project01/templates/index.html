@@ -22,6 +22,10 @@
 
     <title>스파르타코딩클럽 | 부트스트랩 연습하기</title>
 
+    <!-- Bootstrap file input -->
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+
+    <!-- 구글 폰트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 
@@ -43,49 +47,83 @@
         .container {
             padding-left: 50px;
         }
+
+        .posting-box > .custom-file {
+            margin-bottom: 20px;
+        }
     </style>
     <script>
         $(document).ready(function () {
-            listing();
+            bsCustomFileInput.init()
+            listing(); //데이터 조회 Ajax GET 요청
         })
 
         function listing() {
+            //비동기식 Ajax를 이용하여 HTTP request 전송
             $.ajax({
                 type: "GET",
                 url: "/diary",
                 data: {},
                 success: function (response) {
-                    let diaries = response['all_diary'];
+                    let diaries = response['all_diary'];    // 받아온 json 파일 중 all_diary
                     for (let i = 0; i < diaries.length; i++) {
                         let title = diaries[i]['title'];
                         let content = diaries[i]['content'];
+                        let file = diaries[i]['file'];
 
                         let temp_html = `<div class="card">
+                                            <img src="../static/${file}" class="card-img-top">
                                             <div class="card-body">
                                                 <h5 class="card-title">${title}</h5>
                                                 <p class="card-text">${content}</p>
                                             </div>
                                         </div>`;
-                        $('#cards-box').append(temp_html);
+                        $('#cards-box').append(temp_html);  //카드 목록에 추가
                     }
                 }
             })
         }
 
         function posting() {
-            let title = $('#title').val();
-            let content = $('#content').val();
+            let title = $('#title').val()
+            let content = $("#content").val()
 
+            let file = $('#file')[0].files[0]
+            let form_data = new FormData() //file과 같이 보내기 위해 FormData() 이용
+
+            form_data.append("file_give", file)
+            form_data.append("title_give", title)
+            form_data.append("content_give", content)
+
+            //비동기식 Ajax를 이용하여 HTTP request 전송
             $.ajax({
                 type: "POST",
                 url: "/diary",
-                data: {title_give: title, content_give: content},
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
                 success: function (response) {
-                    alert(response['msg'])
-                    window.location.reload();
+                    alert(response["msg"])  //완료 메세지
+                    window.location.reload()    //새로고침
                 }
-            })
+            });
         }
+
+        // function posting() {
+        //     let title = $('#title').val();
+        //     let content = $('#content').val();
+        //
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "/diary",
+        //         data: {title_give: title, content_give: content},
+        //         success: function (response) {
+        //             alert(response['msg'])
+        //             window.location.reload();
+        //         }
+        //     })
+        // }
     </script>
 </head>
 
@@ -95,6 +133,10 @@
         <div class="container">
             <h1>나홀로 일기장</h1>
             <div class="posting-box">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="file">
+                    <label class="custom-file-label" for="file">사진 선택하기</label>
+                </div>
                 <div class="form-group">
                     <input type="email" class="form-control" id="title" placeholder="사진 제목">
                 </div>
@@ -102,7 +144,7 @@
                     <textarea class="form-control" id="content" rows="3"
                               placeholder="내용 입력"></textarea>
                 </div>
-                <button onclick="posting()" type="button" class="btn btn-primary">Primary</button>
+                <button onclick="posting()" type="button" class="btn btn-primary">저장하기</button>
             </div>
         </div>
     </div>
