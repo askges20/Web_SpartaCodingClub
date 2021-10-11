@@ -51,6 +51,12 @@
         .posting-box > .custom-file {
             margin-bottom: 20px;
         }
+
+        .save-date {
+            color: gray;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
     </style>
     <script>
         $(document).ready(function () {
@@ -69,6 +75,7 @@
                     for (let i = 0; i < diaries.length; i++) {
                         let title = diaries[i]['title'];
                         let content = diaries[i]['content'];
+                        let date = diaries[i]['date'];
                         let file = diaries[i]['file'];
 
                         let temp_html = `<div class="card">
@@ -76,6 +83,7 @@
                                             <div class="card-body">
                                                 <h5 class="card-title">${title}</h5>
                                                 <p class="card-text">${content}</p>
+                                                <p class="save-date">${date}</p>
                                             </div>
                                         </div>`;
                         $('#cards-box').append(temp_html);  //카드 목록에 추가

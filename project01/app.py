@@ -5,8 +5,8 @@ app = Flask(__name__)
 from pymongo import MongoClient
 
 # MongoDB 연결하기
-# client = MongoClient('localhost', 27017)
-client = MongoClient('mongodb://test:test@localhost', 27017)
+client = MongoClient('localhost', 27017)
+#client = MongoClient('mongodb://test:test@localhost', 27017)
 
 db = client.dbsparta_plus_week1
 
@@ -33,10 +33,11 @@ def save_diary():
     content_receive = request.form['content_give']
 
     file = request.files["file_give"]
-    extension = file.filename.split('.')[-1] # 파일 확장자
+    extension = file.filename.split('.')[-1]  # 파일 확장자
 
-    today = datetime.now() # 현재 날짜 시각
+    today = datetime.now()  # 현재 날짜 시각
     mytime = today.strftime('%Y-%m-%d-%H-%M-%S')  # 원하는 형태로 변환하기
+    today_date = today.strftime('%Y.%m.%d')  # 등록 날짜
     filename = f'file-{mytime}'
 
     save_to = f'static/{filename}.{extension}'
@@ -45,7 +46,8 @@ def save_diary():
     doc = {
         'title': title_receive,
         'content': content_receive,
-        'file': f'{filename}.{extension}'
+        'file': f'{filename}.{extension}',
+        'date': today_date
     }
 
     db.diary.insert_one(doc)  # MongoDB에 저장
