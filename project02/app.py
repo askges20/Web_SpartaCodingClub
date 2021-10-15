@@ -18,23 +18,30 @@ def main():
 
 @app.route('/detail/<keyword>')
 def detail(keyword):
+    status_receive = request.args.get("status_give")
     # API에서 단어 뜻 찾아서 결과 보내기
     r = requests.get(f"https://owlbot.info/api/v4/dictionary/{keyword}", headers={"Authorization": "Token 658679be993d1b24d8a6919d69f04f488a6a5b7c"})
     result = r.json()
     print(result)
-    return render_template("detail.html", word=keyword, result=result)
+    return render_template("detail.html", word=keyword, result=result, status=status_receive)
 
 
 @app.route('/api/save_word', methods=['POST'])
 def save_word():
     # 단어 저장하기
-    return jsonify({'result': 'success', 'msg': '단어 저장'})
+    word_receive = request.form["word_give"]
+    definition_receive = request.form["definition_give"]
+    doc = {"word": word_receive, "definition": definition_receive}
+    db.words.insert_one(doc)
+    return jsonify({'result': 'success', 'msg': f'단어 {word_receive} 저장'})
 
 
 @app.route('/api/delete_word', methods=['POST'])
 def delete_word():
     # 단어 삭제하기
-    return jsonify({'result': 'success', 'msg': '단어 삭제'})
+    word_receive = request.form["word_give"]
+    db.words.delete_one({"word": word_receive})
+    return jsonify({'result': 'success', 'msg': f'단어 {word_receive} 삭제'})
 
 
 if __name__ == '__main__':
