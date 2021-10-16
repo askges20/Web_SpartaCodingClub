@@ -14,8 +14,9 @@ db = client.dbsparta_plus_week2
 @app.route('/')
 def main():
     # DB에서 저장된 단어 찾아서 HTML에 나타내기
+    msg = request.args.get("msg")
     words = list(db.words.find({}, {"_id": False}))  # _id에 해당하는 열은 빼고
-    return render_template("index.html", words=words)
+    return render_template("index.html", words=words, msg=msg)
 
 
 @app.route('/detail/<keyword>')
@@ -23,6 +24,9 @@ def detail(keyword):
     status_receive = request.args.get("status_give")
     # API에서 단어 뜻 찾아서 결과 보내기
     r = requests.get(f"https://owlbot.info/api/v4/dictionary/{keyword}", headers={"Authorization": "Token 658679be993d1b24d8a6919d69f04f488a6a5b7c"})
+    if r.status_code != 200:
+        return redirect(url_for("main", msg="사전에 존재하지 않는 단어입니다."))
+        #  return redirect('/')
     result = r.json()
     print(result)
     return render_template("detail.html", word=keyword, result=result, status=status_receive)

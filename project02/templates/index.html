@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Sparta Vocabulary Notebook</title>
+    <meta property="og:title" content="Sparta Vocabulary Notebook"/>
+    <meta property="og:description" content="mini project for Web Plus"/>
+    <meta property="og:image" content="{{ url_for('static', filename='logo_red.png') }}"/>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -65,8 +70,45 @@
         tbody:last-child tr:last-child td:last-child {
             border-radius: 0 0 10px 0;
         }
-    </style>
 
+        tr.highlight > td {
+            background-color: #e8344e;
+            color: white;
+        }
+
+        tr.highlight > td > a {
+            color: white;
+        }
+    </style>
+    <script>
+        console.log("{{ msg }}")
+        {% if msg %}
+            alert("{{ msg }}")
+        {% endif %}
+        let words = {{ words|tojson }}; //html이 아니라 json임을 명시
+        let word_list = [];
+        for (let i = 0; i < words.length; i++) {
+            word_list.push(words[i]["word"])
+        }
+        console.log(word_list)
+
+        function find_word() {
+            let word = $("#input-word").val().toLowerCase()
+            if (word == "") {
+                alert("값을 입력해주세요!")
+                return
+            }
+            if (word_list.includes(word)) {
+                // 리스트에 있으면 하이라이트
+                $(`#word-${word}`).addClass("highlight")
+                $(`#word-${word}`).siblings().removeClass("highlight")
+                $(`#word-${word}`)[0].scrollIntoView()
+            } else {
+                // 리스트에 없으면 상세페이지로
+                window.location.href = `/detail/${word}?status_give=new`
+            }
+        }
+    </script>
 </head>
 <body>
 <div class="wrap">
