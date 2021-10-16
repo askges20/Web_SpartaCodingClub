@@ -5,9 +5,9 @@ import requests
 
 app = Flask(__name__)
 
-# client = MongoClient('localhost', 27017)
+client = MongoClient('localhost', 27017)
 # client = MongoClient('mongodb://id:pw@ip', 27017) # 이런 방법도 있다.
-client = MongoClient('52.78.107.146', 27017, username="test", password="test")
+# client = MongoClient('52.78.107.146', 27017, username="test", password="test")
 db = client.dbsparta_plus_week2
 
 
