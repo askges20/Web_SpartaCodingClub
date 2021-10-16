@@ -8,12 +8,17 @@
 - Database : MongoDB & Robo 3T
 - Package : flask, pymongo
 - Hosting : AWS EC2
+- API : Owlbot Dictionary API
 
 ## 💻 실습 예제
 ### 1) 나만의 일기장
 - `Ajax`를 통한 GET/POST 요청으로 `MongoDB`에 일기를 저장하고 불러온다.
 - `AWS EC2`로 배포한다.
 - [소스 코드](./project01)
+### 2) 나만의 단어장
+- Flask를 이용하여 멀티페이지 사이트를 만든다.
+- Ajax 요청으로 Owlbot Dictionary API (사전 API)에서 단어 및 정의 데이터를 불러온다.
+- [소스 코드](./project02)
 
 ## ✏ 공부 기록
 [티스토리 블로그](https://askges20.tistory.com/category/%5B%EC%8A%A4%ED%8C%8C%EB%A5%B4%ED%83%80%EC%BD%94%EB%94%A9%ED%81%B4%EB%9F%BD%5D/%EC%9B%B9%EA%B0%9C%EB%B0%9C%20%ED%94%8C%EB%9F%AC%EC%8A%A4)
