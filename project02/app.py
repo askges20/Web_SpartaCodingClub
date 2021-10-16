@@ -5,15 +5,17 @@ import requests
 
 app = Flask(__name__)
 
+client = MongoClient('localhost', 27017)
 # client = MongoClient('mongodb://id:pw@ip', 27017) # 이런 방법도 있다.
-client = MongoClient('52.78.107.146', 27017, username="test", password="test")
+# client = MongoClient('52.78.107.146', 27017, username="test", password="test")
 db = client.dbsparta_plus_week2
 
 
 @app.route('/')
 def main():
     # DB에서 저장된 단어 찾아서 HTML에 나타내기
-    return render_template("index.html")
+    words = list(db.words.find({}, {"_id": False}))  # _id에 해당하는 열은 빼고
+    return render_template("index.html", words=words)
 
 
 @app.route('/detail/<keyword>')
