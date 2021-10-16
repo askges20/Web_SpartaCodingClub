@@ -5,9 +5,9 @@ import requests
 
 app = Flask(__name__)
 
-client = MongoClient('localhost', 27017)
+# client = MongoClient('localhost', 27017)
 # client = MongoClient('mongodb://id:pw@ip', 27017) # 이런 방법도 있다.
-# client = MongoClient('52.78.107.146', 27017, username="test", password="test")
+client = MongoClient('52.78.107.146', 27017, username="test", password="test")
 db = client.dbsparta_plus_week2
 
 
@@ -46,8 +46,36 @@ def save_word():
 def delete_word():
     # 단어 삭제하기
     word_receive = request.form["word_give"]
-    db.words.delete_one({"word": word_receive})
+    db.words.delete_one({"word": word_receive})  # 단어 삭제
+    db.examples.delete_many({"word": word_receive})  # 해당 단어 예문 삭제
     return jsonify({'result': 'success', 'msg': f'단어 {word_receive} 삭제'})
+
+
+@app.route('/api/get_exs', methods=["GET"])
+def get_exs():
+    # 예문 가져오기
+    word_receive = request.args.get("word_give")
+    result = list(db.examples.find({"word": word_receive}, {'_id': 0}))
+    return jsonify({'result': 'success', 'examples': result})
+
+
+@app.route('/api/save_ex', methods=["POST"])
+def save_ex():
+    # 예문 저장하기
+    word_receive = request.form["word_give"]
+    example_receive = request.form["example_give"]
+    doc = {"word": word_receive, "example": example_receive}
+    db.examples.insert_one(doc)
+    return jsonify({'result': 'success', 'msg': '예문 저장 완료'})
+
+
+@app.route('/api/delete_ex', methods=["POST"])
+def delete_ex():
+    word_receive = request.form['word_give']
+    number_receive = int(request.form['number_give'])
+    example = list(db.examples.find({'word': word_receive}))[number_receive]['example']
+    db.examples.delete_one({'word': word_receive, 'example': example})
+    return jsonify({'result': 'success'})
 
 
 if __name__ == '__main__':

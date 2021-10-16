@@ -61,6 +61,7 @@
         let word = '{{ word }}' //jinja2 템플릿
         $(document).ready(function () {
             //get_definitions()
+            get_examples()
         })
 
         function save_word() {
@@ -134,6 +135,59 @@
                 }
             })
         }
+
+        function get_examples() {
+            $("#example-list").empty()
+            $.ajax({
+                type: "GET",
+                url: `/api/get_exs?word_give=${word}`,
+                data: {},
+                success: function (response) {
+                    let examples = response['examples']
+                    for (let i = 0; i < examples.length; i++) {
+                        console.log(i)
+                        let example = examples[i]['example']
+                        let html_temp = `<li id="ex-${i}">${example}&nbsp;&nbsp;&nbsp;
+                        <a href="javascript:delete_ex(${i})">delete</a></li>`
+                        $('#example-list').append(html_temp)
+                    }
+                }
+            })
+        }
+
+        function add_ex() {
+            let example = $('#new-example').val()
+            if (example.toLowerCase().includes(word.toLowerCase())) {   // 해당 단어를 포함한 문장이면 저장
+                $.ajax({
+                    type: "POST",
+                    url: `/api/save_ex`,
+                    data: {
+                        word_give: word,
+                        example_give: example
+                    },
+                    success: function(response) {
+                        get_examples()
+                        $('#new-example').val("")   // 입력칸 비우기
+                    }
+                })
+            } else {    //해당 단어를 포함하지 않으면 저장 X
+                alert(`${word} 단어를 포함하는 예문을 작성해주세요.`)
+            }
+        }
+
+        function delete_ex(i) {
+            $.ajax({
+                type: "POST",
+                url: `/api/delete_ex`,
+                data: {
+                    word_give: word,
+                    number_give: i
+                },
+                success: function (response) {
+                    get_examples()
+                }
+            })
+        }
     </script>
 
 </head>
@@ -173,6 +227,19 @@
             {% endfor %}
         </div>
     </div>
+    {% if status=="old" %}
+    <div id="examples" class="container">
+        <h3 style="text-align: center;margin-bottom:1rem">Write your own sentences!</h3>
+        <ul id="example-list">
+            <li id="ex-0">This sentence contains the word 'word'.&nbsp;&nbsp;&nbsp;<a
+                    href="javascript:delete_ex(0)">delete</a></li>
+        </ul>
+        <div class="d-flex justify-content-between" style="margin-left:20px;">
+            <input id="new-example" class="form-control form-control-sm" style="margin-right: 0.5rem">
+            <button class="btn btn-outline-secondary btn-sm" onclick="add_ex()">add</button>
+        </div>
+    </div>
+    {% endif %}
 </div>
 </body>
 </html>
