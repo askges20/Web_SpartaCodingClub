@@ -9,18 +9,21 @@
 ### 구현 화면
 - 나만의 단어장 메인 화면
 <img src="https://user-images.githubusercontent.com/75527311/137753305-17f8d6d5-d29a-4aa0-b74c-2db77016ce44.PNG"/>
+<br/>
 
 - 단어 검색 결과 상세 페이지
 <img src="https://user-images.githubusercontent.com/75527311/137753467-594acd91-fd9d-43aa-8e51-daffb7202a3b.PNG"/>
+<br/>
 
 - 단어를 나만의 단어장에 추가하기
 <img src="https://user-images.githubusercontent.com/75527311/137753609-b0ea1ebf-04d1-42e7-addf-e27c56fadbc0.PNG"/>
 <img src="https://user-images.githubusercontent.com/75527311/137753662-6bcfb939-e031-4295-a284-a52e1bff8979.PNG"/>
+<br/>
 
 - 단어의 예문 추가하기
 <img src="https://user-images.githubusercontent.com/75527311/137753740-b4941e2a-e0fa-48a9-a386-d69d40708734.PNG"/>
 <img src="https://user-images.githubusercontent.com/75527311/137753756-5a5c26c3-f3af-4796-9ca9-6816ed063103.PNG"/>
-
+<br/>
 
 
 ### 주요 코드
@@ -74,8 +77,9 @@ function find_word() {
 }
 ```
 
-- Owlbot에 Ajax 요청으로 단어 데이터 가져오기
+- Owlbot에 `Ajax 요청`으로 단어 데이터 가져오기
 ```javascript
+// detail.html
 $.ajax({
     type: "GET",
     url: `https://owlbot.info/api/v4/dictionary/${word}`,
@@ -116,4 +120,35 @@ $.ajax({
         }
     }
 })
+```
+
+- 또는 Owlbot에 `Jinja2`를 이용하여 단어 데이터 가져오기
+```python
+# app.py
+@app.route('/detail/<keyword>')
+def detail(keyword):
+    status_receive = request.args.get("status_give")
+    # API에서 단어 뜻 찾아서 결과 보내기
+    r = requests.get(f"https://owlbot.info/api/v4/dictionary/{keyword}", headers={"Authorization": "Token 발급받은토큰"})
+    if r.status_code != 200:
+        return redirect(url_for("main", msg="사전에 존재하지 않는 단어입니다."))
+        #  return redirect('/')
+    result = r.json()
+    print(result)
+    return render_template("detail.html", word=keyword, result=result, status=status_receive)
+```
+
+```html
+<!-- detail.html -->
+<div id="definitions">
+    {% for definition in result.definitions %}
+        <div style="padding:10px">
+            <i>{{ definition.type }}</i>
+            <br>{{ definition.definition.encode('ascii', 'ignore').decode('utf-8') }}<br>
+            {% if definition.example %}
+                <span class="example">{{ definition.example.encode('ascii', 'ignore').decode('utf-8')|safe }}</span>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
 ```
