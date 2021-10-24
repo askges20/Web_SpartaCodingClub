@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>간단한 지도 표시하기</title>
+    <script type="text/javascript"
+            src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=9vorxbxcbp"></script>
+    <script src=" https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <style>
+        #map {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            // 네이버 지도 API가 자동으로 id가 map인 곳에 지도를 붙임
+            let map1 = new naver.maps.Map('map', {
+                center: new naver.maps.LatLng(37.4981125, 127.0379399), //위도, 경도
+                zoom: 10, //줌 10만큼
+                zoomControl: true,  //확대, 축소 가능
+                zoomControlOptions: {   // 옵션
+                    style: naver.maps.ZoomControlStyle.SMALL,
+                    position: naver.maps.Position.TOP_RIGHT
+                }
+            });
+
+            // 마커 띄우기
+            let marker = new naver.maps.Marker({
+                position: new naver.maps.LatLng(37.4981125, 127.0379399),   // 위치
+                map: map1,    // 지도 위
+                icon: "{{ url_for('static', filename='rtan_heart.png') }}"
+            });
+
+            // infoWindow 만들고 열기
+            let infowindow = new naver.maps.InfoWindow({
+                content: `<div style="width: 50px;height: 20px;text-align: center"><h5>안녕!</h5></div>`,
+            });
+            // infowindow.open(map1, marker);   // 마커를 기준으로 infoWindow 띄우기
+            // infowindow.close(); // infoWindow 닫기
+
+            // 지도에 리스너 추가해서 클릭했을 때 함수 실행하도록
+            naver.maps.Event.addListener(marker, "click", function () {
+                console.log(infowindow.getMap()); // 정보창이 열려있을 때는 연결된 지도를 반환하고 닫혀있을 때는 null을 반환
+                if (infowindow.getMap()) {  // 열려있으면
+                    infowindow.close();
+                } else {    // 닫혀있으면
+                    infowindow.open(map1, marker);
+                }
+            });
+        })
+    </script>
+</head>
+<body>
+<div id="map"></div>
+</body>
+</html>
