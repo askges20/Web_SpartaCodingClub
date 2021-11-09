@@ -19,6 +19,18 @@ def get_matjip():
     # 2. 클라이언트에 돌려주기
     return jsonify({'result': 'success', 'matjip_list': matjip_list})
 
+@app.route('/like_matjip', methods=['POST'])
+def like_matjip():
+    title_receive = request.form['title_give']
+    address_receive = request.form['address_give']
+    action_receive = request.form['action_give']
+    print(title_receive, address_receive, action_receive)
+
+    if action_receive == 'like':
+        db.matjips.update_one({'title': title_receive, 'address': address_receive}, {'$set': {'liked': True}})
+    else:
+        db.matjips.update_one({'title': title_receive, 'address': address_receive}, {'$unset': {'liked': False}})
+    return jsonify({'result': 'success'})
 # @app.route('/map')
 # def test_map():
 #     return render_template("prac_map.html")
