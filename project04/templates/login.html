@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+    <head>
+
+        <!-- Webpage Title -->
+        <title>Hello, world!</title>
+
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bulma CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+        <!-- JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+
+        <script>
+            {% if msg %}
+                alert("{{ msg }}")
+            {% endif %}
+            // 로그인 구현 시 "쿠키" 사용
+            // 페이지에 관계없이 브라우저에 임시로 저장되는 정보로, key:value 형태(딕셔너리 형태)로 저장됨
+            // 쿠키가 있기 때문에, 한번 로그인하면 네이버에서 다시 로그인할 필요가 없는 것
+            // 브라우저를 닫으면 자동 삭제되게 하거나, 일정 시간이 지나면 삭제되게 할 수 있음
+            function login() {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/login",
+                    data: {id_give: $('#userid').val(), pw_give: $('#userpw').val()},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            // 로그인이 정상적으로 되면 토큰을 받아옴
+                            // 이 토큰을 mytoken이라는 키 값으로 쿠키에 저장
+                            $.cookie('mytoken', response['token']);
+
+                            alert('로그인 완료!')
+                            window.location.href = '/'
+                        } else {
+                            // 로그인이 안되면 에러메시지
+                            alert(response['msg'])
+                        }
+                    }
+                })
+            }
+
+        </script>
+
+    </head>
+    <body>
+        <div class="section has-text-centered">
+            <h1 class="title">로그인 페이지</h1>
+            <div class="container" style="width:60%">
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label" for="userid">ID</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input type="text" class="input" id="userid" aria-describedby="emailHelp"
+                                       placeholder="My ID">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label" for="userpw">PW</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input type="password" class="input" id="userpw" placeholder="My Password">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="button is-primary" onclick="login()">로그인</button>
+            </div>
+        </div>
+    </body>
+</html>
